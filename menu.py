@@ -90,5 +90,6 @@ if __name__ == '__main__':
     python_ta.check_all(config={
         'max-line-length': 100,
         'extra-imports': ['pygame', 'dropdown'],
-        'disable': ['R1705', 'C0200']
+        'disable': ['R1705', 'C0200'],
+        'generated-members': ['pygame.*']
     })
