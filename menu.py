@@ -41,15 +41,7 @@ def draw_screen(screen: pygame.display, objects: list) -> None:
 
     for obj in objects:
         if isinstance(obj, dropdown.Dropdown):
-            x, y = obj.position
-            w, length = obj.dimensions
-            pygame.draw.rect(screen, obj.color, [x, y, w, length], False)  # draw the box
-            pygame.draw.rect(screen, (0, 0, 0), [x, y, w, length], True)  # Draw black outline
-
-            text_display = font.render(obj.current_value, True, (0, 0, 0))
-            text_rect = text_display.get_rect(center=(x + w / 2, y + length / 2))
-            screen.blit(text_display, text_rect)
-
+            render_box(obj, 0, screen, obj.current_value, font)
             if obj.mode == "expand":
                 render_expansions(obj, screen, font)
 
@@ -57,19 +49,24 @@ def draw_screen(screen: pygame.display, objects: list) -> None:
 def render_expansions(dd: dropdown.Dropdown, screen: pygame.display, font: pygame.font) -> None:
     """Draws an expanded dropdown that shows all options."""
     count_so_far = 1  # Initializes to 2 because 1 box has already been created.
-    other_values = [val for val in dd.options if val != dd.current_value]
     for box in dd.options:
         if box != dd.current_value:
-            x, y = dd.position
-            w, length = dd.dimensions
-            y += length * count_so_far  # I found dividing by 3 works best for spacing
-            pygame.draw.rect(screen, dd.color, [x, y, w, length], False)  # draw the box
-            pygame.draw.rect(screen, (0, 0, 0), [x, y, w, length], True)  # Draw black outline
-
-            text_display = font.render(other_values[count_so_far - 1], True, (0, 0, 0))
-            text_rect = text_display.get_rect(center=(x + w / 2, y + length / 2))
-            screen.blit(text_display, text_rect)
+            render_box(dd, count_so_far, screen, box, font)
             count_so_far += 1
+
+
+def render_box(drop: dropdown.Dropdown, count: int,
+               screen: pygame.display, text: str, font: pygame.font) -> None:
+    """Draws a single box"""
+    x, y = drop.position
+    w, length = drop.dimensions
+    y += length * count  # I found dividing by 3 works best for spacing
+    pygame.draw.rect(screen, drop.color, [x, y, w, length], False)  # draw the box
+    pygame.draw.rect(screen, (0, 0, 0), [x, y, w, length], True)  # Draw black outline
+
+    text_display = font.render(text, True, (0, 0, 0))
+    text_rect = text_display.get_rect(center=(x + w / 2, y + length / 2))
+    screen.blit(text_display, text_rect)
 
 
 def create_dropdowns(datasets: dict[str, object]) -> tuple[dropdown.Dropdown, dropdown.Dropdown]:
