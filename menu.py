@@ -1,6 +1,7 @@
 """TODO: ADD DOCSTRING"""
 import pygame
 import dropdown
+import button
 
 
 def run_menu(datasets: dict[str, object]) -> None:
@@ -11,8 +12,12 @@ def run_menu(datasets: dict[str, object]) -> None:
     screen = pygame.display.set_mode((800, 800))  # create an 800 x 800 pixel screen
     dropdown_1, dropdown_2 = create_dropdowns(datasets)
 
+    continue_button = button.Button(position=(300, 700),
+                                    dimensions=(200, 70),
+                                    color=(100, 200, 100))
     dropdowns = [dropdown_1, dropdown_2]  # List of dropdowns to draw on screen
-    things_to_draw = [] + dropdowns
+    things_to_draw = set(dropdowns)
+    things_to_draw.add(continue_button)
 
     running = True
     while running:
@@ -34,47 +39,27 @@ def check_events(events: list[pygame.event], dropdowns: list[dropdown.Dropdown])
     return True
 
 
-def draw_screen(screen: pygame.display, objects: list) -> None:
+def draw_screen(screen: pygame.display, objects: set) -> None:
     """Draw objects onto the menu screen."""
     font = pygame.font.SysFont("Arial", 20)
     screen.fill((200, 200, 200))
 
     for obj in objects:
         if isinstance(obj, dropdown.Dropdown):
-            render_box(obj, 0, screen, obj.current_value, font)
-            if obj.mode == "expand":
-                render_expansions(obj, screen, font)
-
-
-def render_expansions(dd: dropdown.Dropdown, screen: pygame.display, font: pygame.font) -> None:
-    """Draws an expanded dropdown that shows all options."""
-    count_so_far = 1  # Initializes to 2 because 1 box has already been created.
-    for box in dd.options:
-        if box != dd.current_value:
-            render_box(dd, count_so_far, screen, box, font)
-            count_so_far += 1
-
-
-def render_box(drop: dropdown.Dropdown, count: int,
-               screen: pygame.display, text: str, font: pygame.font) -> None:
-    """Draws a single box"""
-    x, y = drop.position
-    w, length = drop.dimensions
-    y += length * count  # I found dividing by 3 works best for spacing
-    pygame.draw.rect(screen, drop.color, [x, y, w, length], False)  # draw the box
-    pygame.draw.rect(screen, (0, 0, 0), [x, y, w, length], True)  # Draw black outline
-
-    text_display = font.render(text, True, (0, 0, 0))
-    text_rect = text_display.get_rect(center=(x + w / 2, y + length / 2))
-    screen.blit(text_display, text_rect)
+            obj.display(screen, font, text=obj.current_value)
+        elif isinstance(obj, button.Button):
+            obj.display(screen, font, text='Continue')
 
 
 def create_dropdowns(datasets: dict[str, object]) -> tuple[dropdown.Dropdown, dropdown.Dropdown]:
     """Take a dictionary of datasets and based off the keys return 2 identical dropdowns."""
     options = list(datasets.keys())
-    # I am making each box of the dropdown be 80 x 20 pixels and placing them in arbitrary spots
-    dropdown_1 = dropdown.Dropdown(options, (20, 20), (80, 30), (100, 100, 200))
-    dropdown_2 = dropdown.Dropdown(options, (120, 20), (80, 30), (200, 100, 100))
+    length = 200
+    width = 30
+    # I am making each box of the dropdown be length x width pixels
+    # placing them in arbitrary spots
+    dropdown_1 = dropdown.Dropdown(options, (100, 20), (length, width), (100, 100, 200))
+    dropdown_2 = dropdown.Dropdown(options, (500, 20), (length, width), (200, 100, 100))
     return dropdown_1, dropdown_2
 
 
@@ -89,7 +74,7 @@ if __name__ == '__main__':
 
     python_ta.check_all(config={
         'max-line-length': 100,
-        'extra-imports': ['pygame', 'dropdown'],
+        'extra-imports': ['pygame', 'dropdown', 'button'],
         'disable': ['R1705', 'C0200'],
         'generated-members': ['pygame.*']
     })
