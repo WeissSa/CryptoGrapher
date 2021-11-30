@@ -37,7 +37,7 @@ class Button:
         self.dimensions = dimensions
         self.is_hovered = False  # assume it is not hovered by default
         # The hover color is a lighter version of the original color
-        self.hover_color = tuple((max(x + 20, 255) for x in color))
+        self.hover_color = tuple((min(x + 20, 255) for x in color))
 
     def display(self, screen: pygame.display, font: pygame.font, text: str) -> None:
         """Draws the button on screen"""
