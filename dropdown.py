@@ -1,11 +1,18 @@
 """TODO: add docstring"""
 import pygame
+import button
 
 
-class Dropdown:
-    """Create a dropdown menu that displays items according to given parameters.
+class Dropdown(button.Button):
+    """Create a dropdown menu that displays items according to given parameters. Inherits from
+    button.Button.
 
     Each dropdown also returns the value which is currently selected.
+
+    Instance Attributes:
+      - options: a list of all options in the dropdown
+      - mode: whether only 1 box or all boxes are showing
+      - is_hovered: represents whether the mouse is on the button
 
     Representation Invariants:
       - 0 < len(self.options)
@@ -13,14 +20,15 @@ class Dropdown:
       - 0 <= position[1] <= 800
       - 0 < dimensions[0]
       - 0 < dimensions[1]
+
+    Example Usage:
+    >>> dropdown1 = Dropdown(['1', '2', '3'], (0, 0), (50, 50), (0,0,0))
+
     """
 
     options: list
-    position: tuple[int, int]
-    dimensions: tuple[int, int]
     current_value: str
-    color: tuple[int, int, int]
-    mode: str  # represents whether the dropdown is currently displaying all options.
+    mode: str
 
     def __init__(self, options: list, pos: tuple[int, int], dimensions: tuple[int, int],
                  color: tuple[int, int, int]) -> None:
@@ -30,10 +38,8 @@ class Dropdown:
 
         self.options = options
         self.current_value = self.options[0]
-        self.position = pos
-        self.dimensions = dimensions
-        self.color = color
         self.mode = "normal"
+        super().__init__(pos, dimensions, color)
 
     def expand(self) -> None:
         """Change the mode of the dropdown to expand"""
@@ -46,20 +52,31 @@ class Dropdown:
     def is_clicked_on(self) -> None:
         """Mutate the object based on if/where the player clicks on screen"""
         if self.mode == 'normal':
-            x, y, wid, length = self.position + self.dimensions
-            rect = pygame.rect.Rect(x, y, wid, length)
-            if rect.collidepoint(pygame.mouse.get_pos()):
+            if self.is_clicked(pygame.mouse.get_pos()):
                 self.expand()
         else:
             order_displayed_now = [self.current_value] + [val for val in self.options
                                                           if val != self.current_value]
             x, y, wid, length = self.position + self.dimensions
-            rects = [pygame.rect.Rect(x, y + i * length, wid, length)
-                     for i in range(0, len(order_displayed_now))]
-            for rect in rects:
-                if rect.collidepoint(pygame.mouse.get_pos()):
-                    self.current_value = order_displayed_now[rects.index(rect)]
+            buttons = [button.Button((x, int(y + length * i)), (wid, length), self.color)
+                       for i in range(0, len(order_displayed_now))]
+            for but in buttons:
+                if but.is_clicked(pygame.mouse.get_pos()):
+                    self.current_value = order_displayed_now[buttons.index(but)]
                     self.contract()
+
+    def display(self, screen: pygame.display, font: pygame.font, text: str) -> None:
+        """Display method but works with dropdown"""
+        super().display(screen, font, text)
+        if self.mode == 'expand':
+            order_displayed_now = [self.current_value] + [val for val in self.options
+                                                          if val != self.current_value]
+            x, y, wid, length = self.position + self.dimensions
+            buttons = [button.Button((x, int(y + length * i)), (wid, length), self.color)
+                       for i in range(0, len(order_displayed_now))]
+            for but in buttons:
+                index = buttons.index(but)
+                but.display(screen, font, text=(order_displayed_now[index]))
 
 
 if __name__ == '__main__':
@@ -67,6 +84,6 @@ if __name__ == '__main__':
 
     python_ta.check_all(config={
         'max-line-length': 100,
-        'extra-imports': ['pygame'],
+        'extra-imports': ['pygame', 'button'],
         'disable': ['R1705', 'C0200']
     })
