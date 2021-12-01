@@ -1,7 +1,7 @@
 """TODO: ADD DOCSTRING"""
 import pygame
-import dropdown
-import button
+from dropdown import Dropdown
+from button import Button
 
 
 def run_menu(datasets: dict[str, object]) -> None:
@@ -12,9 +12,8 @@ def run_menu(datasets: dict[str, object]) -> None:
     screen = pygame.display.set_mode((800, 800))  # create an 800 x 800 pixel screen
     dropdown_1, dropdown_2 = create_dropdowns(datasets)
 
-    continue_button = button.Button(position=(300, 700),
-                                    dimensions=(200, 70),
-                                    color=(100, 200, 100))
+    continue_button = Button(position=(300, 700), dimensions=(200, 70),
+                             color=(100, 200, 100))
     dropdowns = [dropdown_1, dropdown_2]  # List of dropdowns to draw on screen
     things_to_draw = set(dropdowns)
     things_to_draw.add(continue_button)
@@ -27,7 +26,7 @@ def run_menu(datasets: dict[str, object]) -> None:
     pygame.display.quit()
 
 
-def check_events(events: list[pygame.event], dropdowns: list[dropdown.Dropdown]) -> bool:
+def check_events(events: list[pygame.event], dropdowns: list[Dropdown]) -> bool:
     """Go through all events and return whether the user wants to quit
     or if they have pressed a button."""
     for event in events:
@@ -45,25 +44,25 @@ def draw_screen(screen: pygame.display, objects: set) -> None:
     screen.fill((200, 200, 200))
 
     for obj in objects:
-        if isinstance(obj, dropdown.Dropdown):
+        if isinstance(obj, Dropdown):
             obj.display(screen, font, text=obj.current_value)
-        elif isinstance(obj, button.Button):
+        elif isinstance(obj, Button):
             obj.display(screen, font, text='Continue')
 
 
-def create_dropdowns(datasets: dict[str, object]) -> tuple[dropdown.Dropdown, dropdown.Dropdown]:
+def create_dropdowns(datasets: dict[str, object]) -> tuple[Dropdown, Dropdown]:
     """Take a dictionary of datasets and based off the keys return 2 identical dropdowns."""
     options = list(datasets.keys())
     length = 200
     width = 30
     # I am making each box of the dropdown be length x width pixels
     # placing them in arbitrary spots
-    dropdown_1 = dropdown.Dropdown(options, (100, 20), (length, width), (100, 100, 200))
-    dropdown_2 = dropdown.Dropdown(options, (500, 20), (length, width), (200, 100, 100))
+    dropdown_1 = Dropdown(options, (100, 20), (length, width), (100, 100, 200))
+    dropdown_2 = Dropdown(options, (500, 20), (length, width), (200, 100, 100))
     return dropdown_1, dropdown_2
 
 
-def check_dropdowns(dropdowns: list[dropdown.Dropdown]) -> None:
+def check_dropdowns(dropdowns: list[Dropdown]) -> None:
     """Check if dropdowns are being clicked on"""
     for drop in dropdowns:
         drop.is_clicked_on()
