@@ -1,9 +1,9 @@
 """TODO: add docstring"""
 import pygame
-import button
+from button import Button
 
 
-class Dropdown(button.Button):
+class Dropdown(Button):
     """Create a dropdown menu that displays items according to given parameters. Inherits from
     button.Button.
 
@@ -58,7 +58,7 @@ class Dropdown(button.Button):
             order_displayed_now = [self.current_value] + [val for val in self.options
                                                           if val != self.current_value]
             x, y, wid, length = self.position + self.dimensions
-            buttons = [button.Button((x, int(y + length * i)), (wid, length), self.color)
+            buttons = [Button((x, int(y + length * i)), (wid, length), self.color)
                        for i in range(0, len(order_displayed_now))]
             for but in buttons:
                 if but.is_clicked(pygame.mouse.get_pos()):
@@ -68,11 +68,12 @@ class Dropdown(button.Button):
     def display(self, screen: pygame.display, font: pygame.font, text: str) -> None:
         """Display method but works with dropdown"""
         super().display(screen, font, text)
-        if self.mode == 'expand':
+        if self.mode == 'expand':  # Creates a lit of buttons and values which appear onscreen as a
+            # dropdown menu.
             order_displayed_now = [self.current_value] + [val for val in self.options
                                                           if val != self.current_value]
             x, y, wid, length = self.position + self.dimensions
-            buttons = [button.Button((x, int(y + length * i)), (wid, length), self.color)
+            buttons = [Button((x, int(y + length * i)), (wid, length), self.color)
                        for i in range(0, len(order_displayed_now))]
             for but in buttons:
                 index = buttons.index(but)
