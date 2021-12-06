@@ -2,6 +2,7 @@
 import pygame
 from dropdown import Dropdown
 from button import Button
+import grapher
 
 
 def run_menu(datasets: dict[str, object]) -> None:
@@ -20,13 +21,13 @@ def run_menu(datasets: dict[str, object]) -> None:
 
     running = True
     while running:
-        running = check_events(pygame.event.get(), dropdowns)
         draw_screen(screen, things_to_draw)
         pygame.display.update()
+        running = check_events(pygame.event.get(), dropdowns, continue_button)
     pygame.display.quit()
 
 
-def check_events(events: list[pygame.event], dropdowns: list[Dropdown]) -> bool:
+def check_events(events: list[pygame.event], dropdowns: list[Dropdown], button: Button) -> bool:
     """Go through all events and return whether the user wants to quit
     or if they have pressed a button."""
     for event in events:
@@ -34,6 +35,9 @@ def check_events(events: list[pygame.event], dropdowns: list[Dropdown]) -> bool:
             return False
         if event.type == pygame.MOUSEBUTTONUP:
             check_dropdowns(dropdowns)
+            if button.is_clicked(pygame.mouse.get_pos()):
+                grapher.make_graph(dropdowns[0].current_value, dropdowns[1].current_value)
+                return False
 
     return True
 
@@ -73,7 +77,7 @@ if __name__ == '__main__':
 
     python_ta.check_all(config={
         'max-line-length': 100,
-        'extra-imports': ['pygame', 'dropdown', 'button'],
+        'extra-imports': ['pygame', 'dropdown', 'button', 'grapher'],
         'disable': ['R1705', 'C0200'],
         'generated-members': ['pygame.*']
     })
