@@ -44,7 +44,7 @@ class Button:
         self.check_hovered(pygame.mouse.get_pos())
         x, y = self.position
         w, length = self.dimensions
-        if self.is_hovered:
+        if self.is_hovered:  # Make a lighter colour if mouse is hovering over it
             rect = pygame.draw.rect(screen, self.hover_color, [x, y, w, length], False)
         else:
             rect = pygame.draw.rect(screen, self.color, [x, y, w, length], False)

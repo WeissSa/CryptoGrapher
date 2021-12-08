@@ -1,15 +1,17 @@
 """TODO: ADD DOCSTRING"""
 import datetime
 import pygame
+from button import Button
+
+# TODO: Make this into a class
 
 
-def make_graph(dataset1: str, dataset2: str) -> None:
+def make_graph(dataset1: str, dataset2: str, screen: pygame.display) -> None:
     """Handles the making of the final graph"""
 
     normal_font = pygame.font.SysFont("Arial", 20)
     title_font = pygame.font.SysFont("Arial", 45)
 
-    screen = pygame.display.set_mode((800, 800))  # create an 800 x 800 pixel screen
     bg_color = (230, 230, 230)
     screen.fill(bg_color)
 
@@ -57,18 +59,21 @@ def create_legend(screen: pygame.display, set1: str, set2: str, c: tuple[int, in
     """Create a legend which labels set1 and set2 on screen with line color c
 
     Preconditions:
-      - len(set1) < 8
-      - len(set2) < 8
+      - 0 < len(set1) < 8
+      - 0 < len(set2) < 8
     """
+    # Decide the dimensions/create empty box
     dimensions = 140
     legend = pygame.draw.rect(screen, c, [650, 10, dimensions, dimensions / 1.5], True)
     radius = dimensions / 6
 
+    # create circles
     circle1 = pygame.draw.circle(screen, [0, 0, 100],
                                  [legend.left + radius, legend.top + radius], radius)
     circle2 = pygame.draw.circle(screen, [100, 0, 100],
                                  [legend.left + radius, legend.bottom - radius], radius)
 
+    # draw/scale text
     text1 = font.render(set1, True, c)
     if text1.get_rect(midleft=circle1.midright).right > 800:
         text1 = pygame.transform.scale(text1, (int(dimensions - radius * 2), 20))
@@ -95,7 +100,7 @@ if __name__ == '__main__':
 
     python_ta.check_all(config={
         'max-line-length': 100,
-        'extra-imports': ['pygame', 'datetime'],
+        'extra-imports': ['pygame', 'datetime', 'button'],
         'disable': ['R1705', 'C0200'],
         'generated-members': ['pygame.*']
     })

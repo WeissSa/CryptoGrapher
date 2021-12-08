@@ -55,6 +55,8 @@ class Dropdown(Button):
             if self.is_clicked(pygame.mouse.get_pos()):
                 self.expand()
         else:
+            # Recreate the same order of buttons as the user sees and then if one of them is clicked
+            # on, make it the current value and then contract the dropdown
             order_displayed_now = [self.current_value] + [val for val in self.options
                                                           if val != self.current_value]
             x, y, wid, length = self.position + self.dimensions
@@ -75,7 +77,7 @@ class Dropdown(Button):
             x, y, wid, length = self.position + self.dimensions
             buttons = [Button((x, int(y + length * i)), (wid, length), self.color)
                        for i in range(0, len(order_displayed_now))]
-            for but in buttons:
+            for but in buttons:  # Cycle through the dropdown meny and assign each one dataset name
                 index = buttons.index(but)
                 but.display(screen, font, text=(order_displayed_now[index]))
 

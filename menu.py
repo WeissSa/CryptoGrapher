@@ -21,9 +21,11 @@ def run_menu(datasets: dict[str, object]) -> None:
 
     running = True
     while running:
+        # This loop handles displaying/updating the menu. Everyting above is setup for this.
         draw_screen(screen, things_to_draw)
         pygame.display.update()
         running = check_events(pygame.event.get(), dropdowns, continue_button)
+    grapher.make_graph(dropdowns[0].current_value, dropdowns[1].current_value, screen)
     pygame.display.quit()
 
 
@@ -36,7 +38,6 @@ def check_events(events: list[pygame.event], dropdowns: list[Dropdown], button: 
         if event.type == pygame.MOUSEBUTTONUP:
             check_dropdowns(dropdowns)
             if button.is_clicked(pygame.mouse.get_pos()):
-                grapher.make_graph(dropdowns[0].current_value, dropdowns[1].current_value)
                 return False
 
     return True
