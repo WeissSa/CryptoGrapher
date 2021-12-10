@@ -27,9 +27,9 @@ class Point:
     """
     name: str
     date: datetime.date
-    high: float
-    low: float
-    marketcap: int
+    High: float
+    Low: float
+    Marketcap: int
 
 
 @dataclass
@@ -57,6 +57,12 @@ def create_datasets(path: str) -> dict[str, Dataset]:
     Sample Usage:
     >>> create_datasets('data')
     """
+    # TODO add other colours for all currencies
+    color_assignments = {'Bitcoin': (250, 180, 10),
+                         'Ethereum': (170, 190, 230),
+                         'Dogecoin': (160, 140, 100),
+                         'AAVE': (160, 100, 160),
+                         'Litecoin': (60, 70, 120)}
     datasets = {}
     for filename in os.listdir(path):  # finds all the files in /data
         if filename.endswith('csv'):
@@ -64,9 +70,12 @@ def create_datasets(path: str) -> dict[str, Dataset]:
                 reader = csv.reader(file)
                 next(reader)  # can gain headers from this line if used in assignment
                 points = [process_row(row) for row in reader]
+                if points[0].name in color_assignments:
+                    color = color_assignments[points[0].name]
+                else:
+                    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
                 new_dataset = Dataset(points=points,
-                                      color=(random.randint(0, 255), random.randint(0, 255),
-                                             random.randint(0, 255)),
+                                      color=color,
                                       name=points[0].name)
                 datasets[new_dataset.name] = new_dataset
     return datasets
@@ -86,9 +95,9 @@ def process_row(row: list[str]) -> Point:
         name = row[2]
     return Point(name=name,
                  date=str_to_date(row[3]),
-                 high=round(float(row[4]), 3),
-                 low=round(float(row[5]), 3),
-                 marketcap=int(round(float(row[9]))))
+                 High=round(float(row[4]), 3),
+                 Low=round(float(row[5]), 3),
+                 Marketcap=int(round(float(row[9]))))
 
 
 def str_to_date(date: str) -> datetime.date:

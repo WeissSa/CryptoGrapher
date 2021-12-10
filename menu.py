@@ -2,45 +2,62 @@
 import pygame
 from dropdown import Dropdown
 from button import Button
-import grapher
+from grapher import Grapher
+import data_handler
 
 
-def run_menu(datasets: dict[str, object]) -> None:
+def run_menu(datasets: dict[str, data_handler.Dataset]) -> None:
     """Open the menu for our software and set up interface"""
     pygame.display.init()
     pygame.font.init()
 
     screen = pygame.display.set_mode((800, 800))  # create an 800 x 800 pixel screen
     dropdown_1, dropdown_2 = create_dropdowns(datasets)
+    dependent_variable_dropdown = Dropdown(['High', 'Low', 'Marketcap'],
+                                           (400, 100),
+                                           (80, 30),
+                                           (150, 100, 200))
 
     continue_button = Button(position=(300, 700), dimensions=(200, 70),
                              color=(100, 200, 100))
-    dropdowns = [dropdown_1, dropdown_2]  # List of dropdowns to draw on screen
+    dropdowns = [dropdown_1, dropdown_2, dependent_variable_dropdown]
+    # List of dropdowns to draw on screen
     things_to_draw = set(dropdowns)
     things_to_draw.add(continue_button)
 
-    running = True
-    while running:
+    running = 'continue'
+    while running == 'continue':
         # This loop handles displaying/updating the menu. Everyting above is setup for this.
         draw_screen(screen, things_to_draw)
         pygame.display.update()
         running = check_events(pygame.event.get(), dropdowns, continue_button)
-    grapher.make_graph(dropdowns[0].current_value, dropdowns[1].current_value, screen)
-    pygame.display.quit()
+    if running == 'graph':
+        graph = Grapher(datasets[dropdown_1.current_value],
+                        datasets[dropdown_2.current_value], screen,
+                        dependent_variable_dropdown.current_value)
+        running = graph.make_graph()
+        # if make_graph returns that the user wants to continue the function will call itself
+        # and loop recursively
+
+    if running == 'continue':
+        run_menu(datasets)
+
+    elif running == 'quit':
+        pygame.display.quit()
 
 
-def check_events(events: list[pygame.event], dropdowns: list[Dropdown], button: Button) -> bool:
+def check_events(events: list[pygame.event], dropdowns: list[Dropdown], button: Button) -> str:
     """Go through all events and return whether the user wants to quit
     or if they have pressed a button."""
     for event in events:
         if event.type == pygame.QUIT:
-            return False
+            return 'quit'
         if event.type == pygame.MOUSEBUTTONUP:
             check_dropdowns(dropdowns)
             if button.is_clicked(pygame.mouse.get_pos()):
-                return False
+                return 'graph'
 
-    return True
+    return 'continue'
 
 
 def draw_screen(screen: pygame.display, objects: set) -> None:
@@ -48,6 +65,12 @@ def draw_screen(screen: pygame.display, objects: set) -> None:
     font = pygame.font.SysFont("Arial", 20)
     screen.fill((200, 200, 200))
 
+    # Label the dependent variable dropdown
+    text = font.render('Compare: ', True, (0, 0, 0))
+    text_rect = text.get_rect(topleft=(320, 105))
+    screen.blit(text, text_rect)
+
+    # draw all the buttons
     for obj in objects:
         if isinstance(obj, Dropdown):
             obj.display(screen, font, text=obj.current_value)
@@ -78,7 +101,9 @@ if __name__ == '__main__':
 
     python_ta.check_all(config={
         'max-line-length': 100,
-        'extra-imports': ['pygame', 'dropdown', 'button', 'grapher'],
+        'extra-imports': ['pygame', 'dropdown', 'button', 'grapher', 'data_handler'],
         'disable': ['R1705', 'C0200'],
         'generated-members': ['pygame.*']
     })
+
+    run_menu(data_handler.create_datasets('data'))  # runs the code in intended way
