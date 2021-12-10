@@ -58,11 +58,11 @@ def create_datasets(path: str) -> dict[str, Dataset]:
     >>> create_datasets('data')
     """
     datasets = {}
-    for filename in os.listdir(path):
+    for filename in os.listdir(path):  # finds all the files in /data
         if filename.endswith('csv'):
-            with open(f'{path}/{filename}') as file:
+            with open(f'{path}/{filename}') as file:  # opens all csv in /data
                 reader = csv.reader(file)
-                headers = next(reader)  # Keep in case headers are useful
+                next(reader)  # can gain headers from this line if used in assignment
                 points = [process_row(row) for row in reader]
                 new_dataset = Dataset(points=points,
                                       color=(random.randint(0, 255), random.randint(0, 255),
@@ -72,7 +72,7 @@ def create_datasets(path: str) -> dict[str, Dataset]:
     return datasets
 
 
-def process_row(row) -> Point:
+def process_row(row: list[str]) -> Point:
     """Process a row of data from a csv file.
 
     Note that we use the stock symbol as the name to keep names as short as possible.
@@ -104,21 +104,19 @@ def str_to_date(date: str) -> datetime.date:
 
     return datetime.date(int(date[0:4]), int(date[5:7]), int(date[8:10]))
 
-# if __name__ == '__main__':
-#     import python_ta
-#
-#     python_ta.check_all(config={
-#         'max-line-length': 100,
-#         'extra-imports': ['python_ta.contracts', 'random', 'tkinter'],
-#         'disable': ['R1705', 'C0200'],
-#         'max-args': 7
-#     })
-#
-#     import python_ta.contracts
-#
-#     python_ta.contracts.DEBUG_CONTRACTS = False
-#     python_ta.contracts.check_all_contracts()
 
-    import doctest
+if __name__ == '__main__':
+    import python_ta
 
-    doctest.testmod()
+    python_ta.check_all(config={
+        'max-line-length': 100,
+        'extra-imports': ['python_ta.contracts', 'random', 'datetime', 'csv', 'os'],
+        'allowed-io': ['open'],
+        'disable': ['R1705', 'C0200'],
+        'max-args': 7
+    })
+
+    import python_ta.contracts
+
+    python_ta.contracts.DEBUG_CONTRACTS = False
+    python_ta.contracts.check_all_contracts()
