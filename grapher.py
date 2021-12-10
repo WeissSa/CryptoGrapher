@@ -1,5 +1,6 @@
 """TODO: ADD DOCSTRING"""
 import pygame
+from datetime import datetime
 from button import Button
 from data_handler import Dataset, Point
 
@@ -162,7 +163,7 @@ class Grapher:
                     center_y2 = 750 - center_y2 / max_value * 600
                     x_1 = 30 + i // days_per_10_pixels * 10
                     x_2 = 30 + (i // days_per_10_pixels + 1) * 10
-                    pygame.draw.line(self.screen, dataset.color, (x_1, centery), (x_2, center_y2))
+                    self.draw_line(dataset, (x_1, centery), (x_2, center_y2), points[i].date)
 
                 # Label point if mouse nearby
                 if point_rect.collidepoint(pygame.mouse.get_pos()):
@@ -180,6 +181,14 @@ class Grapher:
         text_2 = self.normal_font.render('$' + str(value), True, self.line_color)
         text_rect_2 = text_2.get_rect(midbottom=text_rect_1.midtop)
         self.screen.blit(text_2, text_rect_2)
+
+    def draw_line(self, dataset: Dataset, point1: tuple[int, int], point2: tuple[int, int],
+                  date: datetime.date) -> None:
+        """Draw a line between 2 points. Line is red if date is during March 2020"""
+        color = dataset.color
+        if datetime(2020, 2, 28).date() < date < datetime(2020, 4, 1).date():
+            color = (255, 0, 0)
+        pygame.draw.line(self.screen, color, point1, point2, 3)
 
 
 def check_events(events: list[pygame.event.Event], continue_button: Button) -> str:
