@@ -80,7 +80,11 @@ def process_row(row: list[str]) -> Point:
     Preconditions:
       - row has the same format as the csv files found from kaggle found by us
     """
-    return Point(name=row[2],
+    if len(row[1]) < 9:
+        name = row[1]
+    else:
+        name = row[2]
+    return Point(name=name,
                  date=str_to_date(row[3]),
                  high=round(float(row[4]), 3),
                  low=round(float(row[5]), 3),
