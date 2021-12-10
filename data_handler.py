@@ -4,13 +4,14 @@ TODO: DOCSTRING, Copyright things
 """
 
 # Import functions
+import random
 from dataclasses import dataclass
 import datetime
 import csv
 import os
-import glob
 
 
+@dataclass
 class Point:
     """A class containing information about one day of a cryptocurrency.
 
@@ -28,36 +29,7 @@ class Point:
     date: datetime.date
     high: float
     low: float
-    marketcap: float
-
-    def __init__(self, name, date, high, low, marketcap) -> None:
-        self.name = name
-        self.date = date
-        self.high = high
-        self.low = low
-        self.marketcap = marketcap
-
-    def add_points(self) -> list[Point]:
-        """Opens all of the csv files and creates a list of lists for each point.
-
-        Preconditions:
-            -
-
-        Sample Usage:
-        >>>
-        """
-        path = os.getcwd()/"path"
-        all_files = glob.glob(os.path.join(path, "*.csv"))
-        points_so_far = []
-
-        for file in all_files:
-            with open(os.path.join(path, file)) as f:
-                data = csv.reader(f)
-                next(data)
-
-                for row in data:
-                    points_so_far.append(Point(row[1], row[3], row[4], row[5], row[9]))
-        return points_so_far
+    marketcap: int
 
 
 @dataclass
@@ -65,34 +37,72 @@ class Dataset:
     """Class that brings together objects from Point that have the same cryptocurrency name.
 
     Instance Attributes:
-        - dataset: A dictionary containing the name of the cryptocurrency as the key,
-            and a list of the points of that cryptocurrency as the value.
+        - points: a list of points in the dataset
+        - color: colour of points in the dataset
+        - name: name of the specific dataset (i.e. Bitcoin)
 
     Representation Invariants:
-        - dataset != {}
+        - all((0 <= nums <= 255 for nums in self.color))
+        - 8 >= len(name) > 0
+        - self.name == self.points[0].name
     """
-    dataset: dict[str, list[Point]]
+    points: list[Point]
+    color: tuple[int, int, int]
+    name: str
 
-    def make_dicts(self, points_so_far: list[Point]) -> dict[str, list[Point]]:
-        """Turns the list of all the points from Point into an organized dictionary.
 
-        Preconditions:
-            - points_so_far != []
+def create_datasets(path: str) -> dict[str, Dataset]:
+    """Opens all of the csv files and creates a list of lists for each point.
 
-        Sample Usage:
-        >>> TODO
+    Sample Usage:
+    >>> create_datasets('data')
+    """
+    datasets = {}
+    for filename in os.listdir(path):
+        if filename.endswith('csv'):
+            with open(f'{path}/{filename}') as file:
+                reader = csv.reader(file)
+                headers = next(reader)  # Keep in case headers are useful
+                points = [process_row(row) for row in reader]
+                new_dataset = Dataset(points=points,
+                                      color=(random.randint(0, 255), random.randint(0, 255),
+                                             random.randint(0, 255)),
+                                      name=points[0].name)
+                datasets[new_dataset.name] = new_dataset
+    return datasets
 
-        """
-        dict_so_far = dict()
-        for point in points_so_far:
-            temp_list = [point]
-            if point.name in dict_so_far.keys():
-                dict_so_far[point.name] += temp_list
-            else:
-                dict_so_far[point.name] = temp_list
-        dict = Dataset(dict_so_far)  # need to fix this function and make it proper
-        # (unless you think this is fine, i think there's just better ways of doing this)
-        return dict
+
+def process_row(row) -> Point:
+    """Process a row of data from a csv file.
+
+    Note that we use the stock symbol as the name to keep names as short as possible.
+
+    Preconditions:
+      - row has the same format as the csv files found from kaggle found by us
+    """
+    return Point(name=row[2],
+                 date=str_to_date(row[3]),
+                 high=round(float(row[4]), 3),
+                 low=round(float(row[5]), 3),
+                 marketcap=int(round(float(row[9]))))
+
+
+def str_to_date(date: str) -> datetime.date:
+    """Convert a string in yyyy-mm-dd format to a datetime.date.
+
+    Preconditions:
+    - len(date_string) == 10
+    - date_string[4] == '-'
+    - date_string[8] == '-'
+    - 13 > int(date[5:7]) > 0
+    - 32 > int(date[8:10) > 0
+
+
+    >>> str_to_date('2020-04-14')
+    datetime.date(2020, 4, 14)
+    """
+
+    return datetime.date(int(date[0:4]), int(date[5:7]), int(date[8:10]))
 
 # if __name__ == '__main__':
 #     import python_ta
