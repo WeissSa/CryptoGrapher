@@ -34,7 +34,7 @@ def run_menu(datasets: dict[str, data_handler.Dataset]) -> None:
     if running == 'graph':
         graph = Grapher(datasets[dropdown_1.current_value],
                         datasets[dropdown_2.current_value], screen,
-                        dependent_variable_dropdown.current_value)
+                        str.lower(dependent_variable_dropdown.current_value))
         running = graph.make_graph()
         # if make_graph returns that the user wants to continue the function will call itself
         # and loop recursively

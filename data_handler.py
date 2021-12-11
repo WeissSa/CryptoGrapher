@@ -27,9 +27,9 @@ class Point:
     """
     name: str
     date: datetime.date
-    High: float
-    Low: float
-    Marketcap: int
+    high: float
+    low: float
+    marketcap: int
 
 
 @dataclass
@@ -95,9 +95,9 @@ def process_row(row: list[str]) -> Point:
         name = row[2]
     return Point(name=name,
                  date=str_to_date(row[3]),
-                 High=round(float(row[4]), 3),
-                 Low=round(float(row[5]), 3),
-                 Marketcap=int(round(float(row[9]))))
+                 high=round(float(row[4]), 3),
+                 low=round(float(row[5]), 3),
+                 marketcap=int(round(float(row[9]))))
 
 
 def str_to_date(date: str) -> datetime.date:
