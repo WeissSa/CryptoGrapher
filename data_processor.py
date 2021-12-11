@@ -4,42 +4,97 @@
 import datetime
 from data_handler import create_datasets  # Imported just for testing, can delete later
 from data_handler import Dataset
+from statistics import mean
 
 
-def low_avg(data: dict[str, Dataset], crypto: str, start_date: datetime.date, end_date: datetime.date) -> float:
+def calc_avg_before(data: dict[str, Dataset], crypto: str) -> float:
     """
-    Takes the average change of the low of a cryptocurrency from the inputted starting date
-    to end date and returns it as a float.
-
-    Note that end_date of all csv files is July 6, 2021 (2021, 7, 6).
+    Returns a list of floats of the average increase of the highs of a cryptocurrency
+    before March 2020.
 
     Preconditions:
         - crypto == data[crypto].name
-        - # end_date and start_date in the dataset
-        - end_date.days > start_date.days
+        - data[crypto].points[0].date <= datetime.date(2020, 3, 1)
 
     Sample Usage:
     >>> data = create_datasets('data')
-    >>> low_avg(data, 'XRP', datetime.date(2020, 3, 1), datetime.date(2021, 7, 6)
-    0.000  # Fix this value
+    >>> calc_avg_before(data, 'XRP')
+    0.199
     """
-    list_values = []
-    num_days = abs(end_date - start_date).days
-
-    for day in range(num_days - 1):
-        temp_diff = round(data[crypto].points[day + 1].Low - data[crypto].points[day].Low, 3)
-        list_values.append(temp_diff)
-
-    total_avg = round(sum(list_values) / num_days, 3)
-    return list_values  # Change this back to total average later
+    num_days = abs(datetime.date(2020, 3, 1) - data[crypto].points[0].date).days
+    return round(sum([data[crypto].points[day].High for day in range(num_days)]) / num_days, 3)
 
 
-if __name__ == '__main__':
-    import python_ta
+def calc_avg_after(data: dict[str, Dataset], crypto: str) -> float:
+    """
+    Returns a list of floats of the average increase of the high of a cryptocurrency
+    from March 2020 to the most recent data entry.
 
-    python_ta.check_all(config={
-        'max-line-length': 100,
-        'extra-imports': ['pygame', 'datetime', 'button', 'data_handler'],
-        'disable': ['R1705', 'C0200'],
-        'generated-members': ['pygame.*']
-    })
+    Preconditions:
+        - crypto == data[crypto].name
+        - data[crypto].points[-1].date >= datetime.date(2020, 3, 1)
+
+    Sample Usage:
+    >>> data = create_datasets('data')
+    >>> calc_avg_after(data, 'XRP')
+    0.477
+    """
+    num_days = abs(data[crypto].points[-1].date - datetime.date(2020, 3, 1)).days
+    return round(sum([data[crypto].points[-day].High for day in range(1, num_days + 1)]) / num_days, 3)
+
+
+def calc_per_before(data: dict[str, Dataset], crypto: str) -> float:
+    """
+    Returns a list of floats of the percent increase of the low and high of a cryptocurrency
+    before March 2020.
+
+    Preconditions:
+        - crypto != ''
+        - data[crypto].points[0].date <= datetime.date(2020, 3, 1)
+
+    Sample Usage:
+    >>> data = create_datasets('data')
+    >>> calc_per_before(data, 'XRP')
+    0.49
+    """
+    index = 0
+
+    while data[crypto].points[index].date <= datetime.date(2020, 3, 1):
+        index += 1
+
+    return round(mean([(data[crypto].points[i + 1].High - data[crypto].points[i].High)
+                       / data[crypto].points[i].High * 100 for i in range(index)]), 2)
+
+
+def calc_per_after(data: dict[str, Dataset], crypto: str) -> float:
+    """
+    Returns a list of floats of the percent increase of the high of a cryptocurrency
+    after March 2020 to the most recent data entry.
+
+    Preconditions:
+        - crypto != ''
+        - data[crypto].points[-1].date >= datetime.date(2020, 3, 1)
+
+    Sample Usage:
+    >>> data = create_datasets('data')
+    >>> calc_per_before(data, 'XRP')
+    0.48
+    """
+    index = -1
+
+    while data[crypto].points[index].date >= datetime.date(2020, 3, 1):
+        index -= 1
+
+    return round(mean([(data[crypto].points[i].High - data[crypto].points[i - 1].High)
+                       / data[crypto].points[i - 1].High * 100 for i in range(index, 0)]), 2)
+
+
+# if __name__ == '__main__':
+#     import python_ta
+#
+#     python_ta.check_all(config={
+#         'max-line-length': 100,
+#         'extra-imports': ['pygame', 'datetime', 'button', 'data_handler'],
+#         'disable': ['R1705', 'C0200'],
+#         'generated-members': ['pygame.*']
+#     })
