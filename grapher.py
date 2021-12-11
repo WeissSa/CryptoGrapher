@@ -80,14 +80,17 @@ class Grapher:
     def label_axis(self, x: pygame.rect.Rect, y: pygame.rect.Rect) -> None:
         """Label the axis"""
 
-        x_label = self.normal_font.render('Days', True, self.line_color)
+        x_label = self.normal_font.render('DAYS', True, self.line_color)
         x_rect = x_label.get_rect(midtop=x.midbottom)
 
-        y_label = self.normal_font.render(self.comparison, True, self.line_color)
+        y_label = self.normal_font.render(str.upper(self.comparison), True, self.line_color)
         y_label = pygame.transform.rotozoom(y_label, 90, 1)
         y_rect = y_label.get_rect(midright=y.midleft)
 
-        title = self.normal_font.render('Price vs Time', True, self.line_color)
+        title_string = f'Price vs Time of {self.dataset1.name} and {self.dataset2.name}'
+        if self.dataset1 == self.dataset2:
+            title_string = f'Price vs Time of {self.dataset1.name}'
+        title = self.normal_font.render(title_string, True, self.line_color)
         title_rect = title.get_rect(center=(400, 25))
 
         self.screen.blit(x_label, x_rect)
@@ -128,15 +131,19 @@ class Grapher:
         Note that the area we can draw on is 720 x 650 pixels
         """
         # Make sure we are working with the larger dataset first
-        datasets = [self.dataset1, self.dataset2]
-        if len(self.dataset2.points) > len(self.dataset1.points):
-            datasets.reverse()
+        if self.dataset1 != self.dataset2:
+            datasets = [self.dataset1, self.dataset2]
+            if len(self.dataset2.points) > len(self.dataset1.points):
+                datasets.reverse()
 
-        datasets = even_out_datasets(datasets)
+            datasets = even_out_datasets(datasets)
 
-        max_value = max([x.__getattribute__(self.comparison)
-                         for x in datasets[0].points] + [x.__getattribute__(self.comparison)
-                                                         for x in datasets[1].points])
+            max_value = max([x.__getattribute__(self.comparison)
+                             for x in datasets[0].points] + [x.__getattribute__(self.comparison)
+                                                             for x in datasets[1].points])
+        else:
+            datasets = [self.dataset1]
+            max_value = max([x.__getattribute__(self.comparison) for x in datasets[0].points])
 
         for dataset in datasets:
             points = dataset.points
@@ -144,23 +151,23 @@ class Grapher:
 
             # Set up a measurement so that each point has at least a 10 pixel gap between the center
             num_points = len(points)
-            days_per_10_pixels = num_points // 72  # the graph has 720 pixels on the x axis
+            days_per_10_pixels = max(int(num_points / 72 + 0.5), 1)
+            # the graph has 720 pixels on the x axis and the + 0.5 rounds it up
             for i in range(0, len(points), days_per_10_pixels):
-
                 # Set Y and radius relative to the maximum value on the graph
-                centery = 750 - points[i].__getattribute__(self.comparison) / max_value * 600
+                centery = 750 - points[i].__getattribute__(self.comparison) / max_value * 650
 
                 # 1 minimum radius so you can hover over any point (it can get a bit precise still)
                 radius = max(points[i].__getattribute__(self.comparison) / max_value * 10, 3)
 
                 point_rect = pygame.draw.circle(self.screen, color,
-                                                (30 + i // days_per_10_pixels * 10, centery),
+                                                (30 + (i // days_per_10_pixels) * 10, centery),
                                                 radius)
 
                 # Draw a line to the next point
                 if i < len(points) - days_per_10_pixels:
                     center_y2 = points[i + days_per_10_pixels].__getattribute__(self.comparison)
-                    center_y2 = 750 - center_y2 / max_value * 600
+                    center_y2 = 750 - center_y2 / max_value * 650
                     x_1 = 30 + i // days_per_10_pixels * 10
                     x_2 = 30 + (i // days_per_10_pixels + 1) * 10
                     self.draw_line(dataset, (x_1, centery), (x_2, center_y2), points[i].date)
@@ -186,9 +193,26 @@ class Grapher:
                   date: datetime.date) -> None:
         """Draw a line between 2 points. Line is red if date is during March 2020"""
         color = dataset.color
-        if datetime(2020, 2, 28).date() < date < datetime(2020, 4, 1).date():
+        # just in case a point in March is not caught, we measure the first half of april
+        if datetime(2020, 2, 28).date() < date < datetime(2020, 4, 15).date():
             color = (255, 0, 0)
         pygame.draw.line(self.screen, color, point1, point2, 3)
+        if color == (255, 0, 0):
+            self.draw_covid_rect(point1, point2)
+
+    def draw_covid_rect(self, point1: tuple[int, int], point2: tuple[int, int]) -> None:
+        """Draw a semi-transparent red rectangle on the covid parts of the graph.
+
+        Preconditions:
+          - 30 < point1[0] < 750
+          - 30 < point2[0] < 750
+        """
+        length = point2[0] - point1[0]
+        height = 675
+        rect = pygame.Surface((length, height))
+        rect.set_alpha(50)  # Make it transparent
+        rect.fill((255, 0, 0))
+        self.screen.blit(rect, (point1[0], 75))
 
 
 def check_events(events: list[pygame.event.Event], continue_button: Button) -> str:
