@@ -120,10 +120,19 @@ def calc_per_after(dataset: Dataset, attr: str) -> str:
       - len(dataset.points) > 0
 
     Sample Usage:
-    >>> from data_handler import create_datasets
-    >>> data = create_datasets('data')
-    >>> calc_per_after(data['Bitcoin'], 'high')
-    '0.419%'
+    >>> from data_handler import Point
+    >>> date1 = datetime.date(2020, 4, 1)
+    >>> date2 = datetime.date(2020, 4, 2)
+    >>> points = [Point('p', date1, 6, 3, 1), Point('p', date2, 5, 3, 1)]
+    >>> data = Dataset(points, (0, 0, 0), 'point')
+    >>> calc_per_after(data, 'high')
+    '-16.667%'
+    >>> points[0].high = 1
+    >>> calc_per_after(data, 'high')
+    '400.0%'
+    >>> points[0].high = 0
+    >>> calc_per_after(data, 'high')
+    '0%'
     """
     attr_list_so_far = []
     points = dataset.points
