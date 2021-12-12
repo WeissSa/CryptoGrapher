@@ -2,99 +2,136 @@
 
 """
 import datetime
-from data_handler import create_datasets  # Imported just for testing, can delete later
 from data_handler import Dataset
-from statistics import mean
 
 
-def calc_avg_before(data: dict[str, Dataset], crypto: str) -> float:
+def calc_avg_before(dataset: Dataset, attr: str) -> float:
     """
-    Returns a list of floats of the average increase of the highs of a cryptocurrency
+    Returns a list of floats of the average increase of the given attr of a cryptocurrency
     before March 2020.
 
+    If no points exist before March 2020 return 0.
+
     Preconditions:
-        - crypto == data[crypto].name
-        - data[crypto].points[0].date <= datetime.date(2020, 3, 1)
+      - len(dataset.points) > 0
 
     Sample Usage:
+    >>> from data_handler import create_datasets
     >>> data = create_datasets('data')
-    >>> calc_avg_before(data, 'XRP')
-    0.199
+    >>> calc_avg_before(data['Bitcoin'], 'high')
+    2.515
     """
-    num_days = abs(datetime.date(2020, 3, 1) - data[crypto].points[0].date).days
-    return round(sum([data[crypto].points[day].High for day in range(num_days)]) / num_days, 3)
+    attr_list_so_far = []
+    points = dataset.points
+    for i in range(0, len(points) - 1):
+        if points[i + 1].date < datetime.date(2020, 4, 1):
+            increase = points[i + 1].__getattribute__(attr) - points[i].__getattribute__(attr)
+            attr_list_so_far.append(increase)
+
+    if len(attr_list_so_far) == 0:
+        return 0
+
+    return round(sum(attr_list_so_far) / (len(attr_list_so_far)), 3)
 
 
-def calc_avg_after(data: dict[str, Dataset], crypto: str) -> float:
+def calc_avg_after(dataset: Dataset, attr: str) -> float:
     """
-    Returns a list of floats of the average increase of the high of a cryptocurrency
+    Returns a list of floats of the average increase of the given attr of a cryptocurrency
     from March 2020 to the most recent data entry.
 
+    If no points exist after March 2020 return 0.
+
     Preconditions:
-        - crypto == data[crypto].name
-        - data[crypto].points[-1].date >= datetime.date(2020, 3, 1)
+      - len(dataset.points) > 0
 
     Sample Usage:
+    >>> from data_handler import create_datasets
     >>> data = create_datasets('data')
-    >>> calc_avg_after(data, 'XRP')
-    0.477
+    >>> calc_avg_after(data['Bitcoin'], 'high')
+    61.762
     """
-    num_days = abs(data[crypto].points[-1].date - datetime.date(2020, 3, 1)).days
-    return round(sum([data[crypto].points[-day].High for day in range(1, num_days + 1)]) / num_days, 3)
+    attr_list_so_far = []
+    points = dataset.points
+    for i in range(0, len(points) - 1):
+        if points[i + 1].date >= datetime.date(2020, 4, 1):
+            increase = points[i + 1].__getattribute__(attr) - points[i].__getattribute__(attr)
+            attr_list_so_far.append(increase)
+
+    if len(attr_list_so_far) == 0:
+        return 0
+
+    return round(sum(attr_list_so_far) / len(attr_list_so_far), 3)
 
 
-def calc_per_before(data: dict[str, Dataset], crypto: str) -> float:
+def calc_per_before(dataset: Dataset, attr: str) -> str:
     """
-    Returns a list of floats of the percent increase of the low and high of a cryptocurrency
+    Returns a list of floats of the percent increase of the given attr of a cryptocurrency
     before March 2020.
 
+    If no points exist before March 2020 return 0%.
+
     Preconditions:
-        - crypto != ''
-        - data[crypto].points[0].date <= datetime.date(2020, 3, 1)
+      - len(dataset.points) > 0
 
     Sample Usage:
+    >>> from data_handler import create_datasets
     >>> data = create_datasets('data')
-    >>> calc_per_before(data, 'XRP')
-    0.49
+    >>> calc_per_before(data['Bitcoin'], 'high')
+    '0.223%'
     """
-    index = 0
+    attr_list_so_far = []
+    points = dataset.points
+    for i in range(0, len(points) - 1):
+        if points[i + 1].date < datetime.date(2020, 4, 1) and points[i].__getattribute__(attr) != 0:
+            increase = points[i + 1].__getattribute__(attr) / points[i].__getattribute__(attr)
+            attr_list_so_far.append(increase)
 
-    while data[crypto].points[index].date <= datetime.date(2020, 3, 1):
-        index += 1
+    if len(attr_list_so_far) == 0:
+        return '0%'
 
-    return round(mean([(data[crypto].points[i + 1].High - data[crypto].points[i].High)
-                       / data[crypto].points[i].High * 100 for i in range(index)]), 2)
+    string = round((sum(attr_list_so_far) / len(attr_list_so_far) - 1) * 100, 3)
+    return str(string) + '%'
 
 
-def calc_per_after(data: dict[str, Dataset], crypto: str) -> float:
+def calc_per_after(dataset: Dataset, attr: str) -> str:
     """
-    Returns a list of floats of the percent increase of the high of a cryptocurrency
+    Returns a list of floats of the percent increase of the attr of a cryptocurrency
     after March 2020 to the most recent data entry.
 
+    If no points exist after March 2020 return 0%.
+
     Preconditions:
-        - crypto != ''
-        - data[crypto].points[-1].date >= datetime.date(2020, 3, 1)
+      - len(dataset.points) > 0
 
     Sample Usage:
+    >>> from data_handler import create_datasets
     >>> data = create_datasets('data')
-    >>> calc_per_before(data, 'XRP')
-    0.48
+    >>> calc_per_after(data['Bitcoin'], 'high')
+    '0.419%'
     """
-    index = -1
+    attr_list_so_far = []
+    points = dataset.points
+    for i in range(0, len(points) - 1):
+        if points[i + 1].date >= datetime.date(2020, 4, 1) \
+                and points[i].__getattribute__(attr) != 0:
+            increase = points[i + 1].__getattribute__(attr) / points[i].__getattribute__(attr)
+            attr_list_so_far.append(increase)
 
-    while data[crypto].points[index].date >= datetime.date(2020, 3, 1):
-        index -= 1
+    if len(attr_list_so_far) == 0:
+        return '0%'
 
-    return round(mean([(data[crypto].points[i].High - data[crypto].points[i - 1].High)
-                       / data[crypto].points[i - 1].High * 100 for i in range(index, 0)]), 2)
+    string = round((sum(attr_list_so_far) / len(attr_list_so_far) - 1) * 100, 3)
+    return str(string) + '%'
 
 
-# if __name__ == '__main__':
-#     import python_ta
-#
-#     python_ta.check_all(config={
-#         'max-line-length': 100,
-#         'extra-imports': ['pygame', 'datetime', 'button', 'data_handler'],
-#         'disable': ['R1705', 'C0200'],
-#         'generated-members': ['pygame.*']
-#     })
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'max-line-length': 100,
+        'extra-imports': ['pygame', 'datetime', 'data_handler'],
+        'disable': ['R1705', 'C0200'],
+        'generated-members': ['pygame.*']
+    })
+    import doctest
+    doctest.testmod()
