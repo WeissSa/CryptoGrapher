@@ -3,6 +3,7 @@ import pygame
 from datetime import datetime
 from button import Button
 from data_handler import Dataset, Point
+from data_processor import calc_avg_before, calc_avg_after, calc_per_after, calc_per_before
 
 
 class Grapher:
@@ -23,7 +24,7 @@ class Grapher:
       - all(0 <= x <= 255 for x in bg_color)
       - dataset1 and dataset2 are properly formatted Dataset objects
 
-    Example Usage:
+    Sample Usage:
     >>> d1 = Dataset([], (0, 0, 0), 'Bitcoin')
     >>> d2 = Dataset([], (0, 0, 0), 'Dogecoin')
     >>> screen = pygame.display.set_mode((800, 800))
@@ -57,6 +58,7 @@ class Grapher:
             self.create_axis()
             self.create_legend()
             self.graph_points()
+            self.show_increase_data()
 
             # Create and display new_graph button
             continue_button = Button((10, 10), (100, 40),
@@ -214,6 +216,44 @@ class Grapher:
         rect.fill((255, 0, 0))
         self.screen.blit(rect, (point1[0], 75))
 
+    def show_increase_data(self) -> None:
+        """Show the monetary and percent increase of both datasets."""
+        counter = 0
+        datasets = [self.dataset1, self.dataset2]
+        if self.dataset1 == self.dataset2:
+            datasets = [self.dataset1]
+        for dataset in datasets:
+            self.make_info_box('Avg $ change per day: '
+                               + str(calc_avg_before(dataset, self.comparison)),
+                               (30, 100 + 4 * counter * 25),
+                               dataset.color)
+            self.make_info_box('Avg % change per day: '
+                               + str(calc_per_before(dataset, self.comparison)),
+                               (30, 125 + 4 * counter * 25),
+                               dataset.color)
+
+            pygame.draw.line(self.screen, (255, 0, 0), (30, 149 + 50 * counter * 2),
+                             (250, 149 + 50 * counter * 2), 4)
+
+            self.make_info_box('Avg $ change per day: '
+                               + str(calc_avg_after(dataset, self.comparison)),
+                               (30, 152 + 4 * counter * 25),
+                               dataset.color)
+            self.make_info_box('Avg % change per day: '
+                               + str(calc_per_after(dataset, self.comparison)),
+                               (30, 177 + 4 * counter * 25),
+                               dataset.color)
+
+            counter += 1
+
+    def make_info_box(self, info: str, pos: tuple[int, int], color: tuple[int, int, int]) -> None:
+        """Create a coloured box containing info at the given rect."""
+        text_display = self.normal_font.render(info, True, self.line_color)
+        text_rect = text_display.get_rect(topleft=pos)
+        pygame.draw.rect(self.screen, color, text_rect, False)
+        pygame.draw.rect(self.screen, (0, 0, 0), text_rect, True)
+        self.screen.blit(text_display, text_rect)
+
 
 def check_events(events: list[pygame.event.Event], continue_button: Button) -> str:
     """Return whether the user wants to quit or other events have been activated"""
@@ -251,3 +291,5 @@ if __name__ == '__main__':
         'disable': ['R1705', 'C0200'],
         'generated-members': ['pygame.*']
     })
+
+    # No doctests present

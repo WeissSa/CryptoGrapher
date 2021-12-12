@@ -105,5 +105,6 @@ if __name__ == '__main__':
         'disable': ['R1705', 'C0200'],
         'generated-members': ['pygame.*']
     })
+    # No doctests present
 
     run_menu(data_handler.create_datasets('data'))  # runs the code in intended way

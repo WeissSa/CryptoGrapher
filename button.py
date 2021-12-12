@@ -81,3 +81,4 @@ if __name__ == '__main__':
         'extra-imports': ['pygame'],
         'disable': ['R1705', 'C0200']
     })
+    # No doctests present
