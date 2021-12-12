@@ -1,4 +1,18 @@
-"""TODO: add docstring"""
+"""CSC110 Fall 2021: Cryptographer - Dropdown
+
+Module Description
+==================
+This module contains the class creating a button for the dropdown menu, and
+functions about how the button is used.
+
+Copyright and Usage Information
+===============================
+This file is intended exclusively for academic use for the University of Toronto St. George Campus
+in the CSC110 class of Fall 2021. Any distribution of this code, with or without changes,
+are expressly prohibited.
+
+This file is Copyright (c) 2021 Madeline Ahn, and Samuel Weiss.
+"""
 import pygame
 from button import Button
 
@@ -21,11 +35,9 @@ class Dropdown(Button):
       - 0 < dimensions[0]
       - 0 < dimensions[1]
 
-    Example Usage:
+    Sample Usage:
     >>> dropdown1 = Dropdown(['1', '2', '3'], (0, 0), (50, 50), (0,0,0))
-
     """
-
     options: list
     current_value: str
     mode: str
@@ -33,24 +45,27 @@ class Dropdown(Button):
     def __init__(self, options: list, pos: tuple[int, int], dimensions: tuple[int, int],
                  color: tuple[int, int, int]) -> None:
         """Initialize a new instance of the Dropdown class.
-        pos represents the top left corner of the initial box.
-        dimensions represent the dimension of each individual box"""
-
+        'pos' represents the top left corner of the initial box.
+        'dimensions' represents the dimension of each individual box.
+        """
         self.options = options
         self.current_value = self.options[0]
         self.mode = "normal"
         super().__init__(pos, dimensions, color)
 
     def expand(self) -> None:
-        """Change the mode of the dropdown to expand"""
+        """Change the mode of the dropdown to expand.
+        """
         self.mode = "expand"
 
     def contract(self) -> None:
-        """Change the mode of the dropdown to normal"""
+        """Change the mode of the dropdown to normal.
+        """
         self.mode = "normal"
 
     def is_clicked_on(self) -> None:
-        """Mutate the object based on if/where the player clicks on screen"""
+        """Mutate the object based on if/where the player clicks on screen.
+        """
         if self.mode == 'normal':
             if self.is_clicked(pygame.mouse.get_pos()):
                 self.expand()
@@ -68,7 +83,8 @@ class Dropdown(Button):
                     self.contract()
 
     def display(self, screen: pygame.display, font: pygame.font, text: str) -> None:
-        """Display method but works with dropdown"""
+        """Display method that works with dropdown.
+        """
         super().display(screen, font, text)
         if self.mode == 'expand':  # Creates a lit of buttons and values which appear onscreen as a
             # dropdown menu.

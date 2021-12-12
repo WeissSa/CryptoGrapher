@@ -1,4 +1,17 @@
-"""TODO: ADD DOCSTRING"""
+"""CSC110 Fall 2021: Cryptographer - Menu
+
+Module Description
+==================
+This module contains the functions that creates the menu for the interface.
+
+Copyright and Usage Information
+===============================
+This file is intended exclusively for academic use for the University of Toronto St. George Campus
+in the CSC110 class of Fall 2021. Any distribution of this code, with or without changes,
+are expressly prohibited.
+
+This file is Copyright (c) 2021 Madeline Ahn, and Samuel Weiss.
+"""
 import pygame
 from dropdown import Dropdown
 from button import Button
@@ -7,7 +20,8 @@ import data_handler
 
 
 def run_menu(datasets: dict[str, data_handler.Dataset]) -> None:
-    """Open the menu for our software and set up interface"""
+    """Open the menu for our software and set up interface.
+    """
     pygame.display.init()
     pygame.font.init()
 
@@ -27,7 +41,7 @@ def run_menu(datasets: dict[str, data_handler.Dataset]) -> None:
 
     running = 'continue'
     while running == 'continue':
-        # This loop handles displaying/updating the menu. Everyting above is setup for this.
+        # This loop handles displaying/updating the menu. Everything above is setup for this.
         draw_screen(screen, things_to_draw)
         pygame.display.update()
         running = check_events(pygame.event.get(), dropdowns, continue_button)
@@ -36,7 +50,7 @@ def run_menu(datasets: dict[str, data_handler.Dataset]) -> None:
                         datasets[dropdown_2.current_value], screen,
                         str.lower(dependent_variable_dropdown.current_value))
         running = graph.make_graph()
-        # if make_graph returns that the user wants to continue the function will call itself
+        # If make_graph returns that the user wants to continue the function will call itself
         # and loop recursively
 
     if running == 'continue':
@@ -47,8 +61,9 @@ def run_menu(datasets: dict[str, data_handler.Dataset]) -> None:
 
 
 def check_events(events: list[pygame.event], dropdowns: list[Dropdown], button: Button) -> str:
-    """Go through all events and return whether the user wants to quit
-    or if they have pressed a button."""
+    """Goes through all events and return whether the user wants to quit or if they have pressed
+    a button.
+    """
     for event in events:
         if event.type == pygame.QUIT:
             return 'quit'
@@ -61,7 +76,8 @@ def check_events(events: list[pygame.event], dropdowns: list[Dropdown], button: 
 
 
 def draw_screen(screen: pygame.display, objects: set) -> None:
-    """Draw objects onto the menu screen."""
+    """Draw objects onto the menu screen.
+    """
     font = pygame.font.SysFont("Arial", 20)
     screen.fill((200, 200, 200))
 
@@ -79,19 +95,20 @@ def draw_screen(screen: pygame.display, objects: set) -> None:
 
 
 def create_dropdowns(datasets: dict[str, object]) -> tuple[Dropdown, Dropdown]:
-    """Take a dictionary of datasets and based off the keys return 2 identical dropdowns."""
+    """Take a dictionary of datasets and based off the keys return 2 identical dropdowns.
+    """
     options = list(datasets.keys())
     length = 200
     width = 30
-    # I am making each box of the dropdown be length x width pixels
-    # placing them in arbitrary spots
+    # Each box of the dropdown be length x width pixels is made by being placed in arbitrary spots.
     dropdown_1 = Dropdown(options, (100, 20), (length, width), (100, 100, 200))
     dropdown_2 = Dropdown(options, (500, 20), (length, width), (200, 100, 100))
     return dropdown_1, dropdown_2
 
 
 def check_dropdowns(dropdowns: list[Dropdown]) -> None:
-    """Check if dropdowns are being clicked on"""
+    """Check if dropdowns are being clicked on.
+    """
     for drop in dropdowns:
         drop.is_clicked_on()
 
@@ -105,6 +122,7 @@ if __name__ == '__main__':
         'disable': ['R1705', 'C0200'],
         'generated-members': ['pygame.*']
     })
+
     # No doctests present
 
     run_menu(data_handler.create_datasets('data'))  # runs the code in intended way

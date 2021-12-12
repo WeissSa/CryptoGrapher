@@ -1,9 +1,21 @@
-"""CSC110: Cryptographer
+"""CSC110 Fall 2021: Cryptographer - Data Handler
 
-TODO: DOCSTRING, Copyright things
+Module Description
+==================
+This module contains the dataclasses for individual points of a cryptocurrency and the dataset
+that brings together multiple points.
+
+It contains functions that read from the dataset found on kaggle by Sudlai Rajkumar and processes
+each row in order to make the class objects.
+
+Copyright and Usage Information
+===============================
+This file is intended exclusively for academic use for the University of Toronto St. George Campus
+in the CSC110 class of Fall 2021. Any distribution of this code, with or without changes,
+are expressly prohibited.
+
+This file is Copyright (c) 2021 Madeline Ahn, and Samuel Weiss.
 """
-
-# Import functions
 import random
 from dataclasses import dataclass
 import datetime
@@ -57,18 +69,35 @@ def create_datasets(path: str) -> dict[str, Dataset]:
     Sample Usage:
     >>> create_datasets('data')
     """
-    # TODO add other colours for all currencies
     color_assignments = {'Bitcoin': (250, 180, 10),
                          'Ethereum': (170, 190, 230),
                          'Dogecoin': (160, 140, 100),
                          'AAVE': (160, 100, 160),
-                         'Litecoin': (60, 70, 120)}
+                         'Litecoin': (60, 70, 120),
+                         'BinanceCoin': (75, 75, 70),
+                         'Cardano': (15, 40, 130),
+                         'ChainLink': (40, 130, 200),
+                         'Cosmos': (100, 40, 150),
+                         'CryptocomCoin': (20, 60, 80),
+                         'EOS': (180, 200, 220),
+                         'Iota': (60, 130, 100),
+                         'Monero': (220, 120, 50),
+                         'NEM': (130, 220, 190),
+                         'Polkadot': (220, 60, 190),
+                         'Solana': (180, 120, 230),
+                         'Stellar': (10, 210, 240),
+                         'Tether': (45, 145, 120),
+                         'Tron': (220, 30, 20),
+                         'Uniswap': (200, 20, 100),
+                         'USDCoin': (20, 80, 220),
+                         'WrappedBitcoin': (120, 50, 210),
+                         'XRP': (230, 240, 140)}
     datasets = {}
-    for filename in os.listdir(path):  # finds all the files in /data
+    for filename in os.listdir(path):  # Finds all the files in /data
         if filename.endswith('csv'):
             with open(f'{path}/{filename}') as file:  # opens all csv in /data
                 reader = csv.reader(file)
-                next(reader)  # can gain headers from this line if used in assignment
+                next(reader)  # Gains headers from this line if used in assignment.
                 points = [process_row(row) for row in reader]
                 if points[0].name in color_assignments:
                     color = color_assignments[points[0].name]
@@ -104,17 +133,15 @@ def str_to_date(date: str) -> datetime.date:
     """Convert a string in yyyy-mm-dd format to a datetime.date.
 
     Preconditions:
-    - len(date_string) == 10
-    - date_string[4] == '-'
-    - date_string[8] == '-'
-    - 13 > int(date[5:7]) > 0
-    - 32 > int(date[8:10) > 0
-
+        - len(date_string) == 10
+        - date_string[4] == '-'
+        - date_string[8] == '-'
+        - 13 > int(date[5:7]) > 0
+        - 32 > int(date[8:10) > 0
 
     >>> str_to_date('2020-04-14')
     datetime.date(2020, 4, 14)
     """
-
     return datetime.date(int(date[0:4]), int(date[5:7]), int(date[8:10]))
 
 
