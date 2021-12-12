@@ -272,8 +272,8 @@ def even_out_datasets(datasets: list[Dataset]) -> list[Dataset, Dataset]:
     All points added will have value of 0 and a location such that the datetime matches the larger
     dataset.
     """
-    temp_dataset_1 = Dataset(datasets[0].points, datasets[0].color, datasets[0].name)
-    temp_dataset_2 = Dataset(datasets[1].points, datasets[1].color, datasets[1].name)
+    temp_dataset_1 = Dataset(datasets[0].points.copy(), datasets[0].color, datasets[0].name)
+    temp_dataset_2 = Dataset(datasets[1].points.copy(), datasets[1].color, datasets[1].name)
     i = 0
     while len(temp_dataset_1.points) > len(temp_dataset_2.points):
         equivalent_point = temp_dataset_1.points[i]
