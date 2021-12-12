@@ -15,11 +15,16 @@ def calc_avg_before(dataset: Dataset, attr: str) -> float:
     Preconditions:
       - len(dataset.points) > 0
 
-    Sample Usage:
-    >>> from data_handler import create_datasets
-    >>> data = create_datasets('data')
-    >>> calc_avg_before(data['Bitcoin'], 'high')
-    2.515
+    >>> from data_handler import Point
+    >>> date1 = datetime.date(2020, 3, 1)
+    >>> date2 = datetime.date(2020, 3, 2)
+    >>> points = [Point('p', date1, 5, 3, 1), Point('p', date2, 6, 3, 1)]
+    >>> data = Dataset(points, (0, 0, 0), 'point')
+    >>> calc_avg_before(data, 'high')
+    1.0
+    >>> points[0].high = 1
+    >>> calc_avg_before(data, 'high')
+    5.0
     """
     attr_list_so_far = []
     points = dataset.points
@@ -44,11 +49,16 @@ def calc_avg_after(dataset: Dataset, attr: str) -> float:
     Preconditions:
       - len(dataset.points) > 0
 
-    Sample Usage:
-    >>> from data_handler import create_datasets
-    >>> data = create_datasets('data')
-    >>> calc_avg_after(data['Bitcoin'], 'high')
-    61.762
+    >>> from data_handler import Point
+    >>> date1 = datetime.date(2020, 4, 1)
+    >>> date2 = datetime.date(2020, 4, 2)
+    >>> points = [Point('p', date1, 5, 3, 1), Point('p', date2, 6, 3, 1)]
+    >>> data = Dataset(points, (0, 0, 0), 'point')
+    >>> calc_avg_after(data, 'high')
+    1.0
+    >>> points[0].high = 1
+    >>> calc_avg_after(data, 'high')
+    5.0
     """
     attr_list_so_far = []
     points = dataset.points
@@ -74,10 +84,16 @@ def calc_per_before(dataset: Dataset, attr: str) -> str:
       - len(dataset.points) > 0
 
     Sample Usage:
-    >>> from data_handler import create_datasets
-    >>> data = create_datasets('data')
-    >>> calc_per_before(data['Bitcoin'], 'high')
-    '0.223%'
+    >>> from data_handler import Point
+    >>> date1 = datetime.date(2020, 3, 1)
+    >>> date2 = datetime.date(2020, 3, 2)
+    >>> points = [Point('p', date1, 5, 3, 1), Point('p', date2, 6, 3, 1)]
+    >>> data = Dataset(points, (0, 0, 0), 'point')
+    >>> calc_per_before(data, 'high')
+    '20.0%'
+    >>> points[0].high = 1
+    >>> calc_per_before(data, 'high')
+    '500.0%'
     """
     attr_list_so_far = []
     points = dataset.points
