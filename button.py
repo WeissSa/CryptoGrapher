@@ -66,6 +66,9 @@ class Button:
 
     def is_clicked(self, mouse: tuple[float, float]) -> bool:
         """Return if mouse is colliding with self.
+
+        Preconditions:
+          - Mouse button has been clicked
         """
         x, y = self.position
         w, length = self.dimensions

@@ -92,7 +92,6 @@ def calc_per_before(dataset: Dataset, attr: str) -> str:
     Preconditions:
       - len(dataset.points) > 0
 
-    Sample Usage:
     >>> from data_handler import Point
     >>> date1 = datetime.date(2020, 3, 1)
     >>> date2 = datetime.date(2020, 3, 2)
@@ -128,7 +127,6 @@ def calc_per_after(dataset: Dataset, attr: str) -> str:
     Preconditions:
       - len(dataset.points) > 0
 
-    Sample Usage:
     >>> from data_handler import Point
     >>> date1 = datetime.date(2020, 4, 1)
     >>> date2 = datetime.date(2020, 4, 2)
