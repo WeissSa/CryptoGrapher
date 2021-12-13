@@ -1,5 +1,4 @@
-"""CSC110 Fall 2021: Cryptographer - Main
-
+"""
 Module Description
 ==================
 This module contains the functions allowing for loading the necessary files, and performing the
@@ -13,16 +12,15 @@ are expressly prohibited.
 
 This file is Copyright (c) 2021 Madeline Ahn, and Samuel Weiss.
 """
-import data_handler
-import data_processor
-import menu
-import grapher
+from menu import run_menu
+from data_handler import create_datasets
 
 if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
         'max-line-length': 100,
-        'extra-imports': ['data_handler', 'data_processor', 'menu', 'grapher'],
+        'extra-imports': ['data_handler', 'menu'],
         'disable': ['R1705', 'C0200']
     })
+    run_menu(create_datasets('data'))

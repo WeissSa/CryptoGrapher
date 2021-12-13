@@ -5,5 +5,3 @@ python-ta
 # Graphics and data visualization
 pygame
 
-# Math
-numpy

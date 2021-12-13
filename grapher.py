@@ -1,14 +1,11 @@
-"""CSC110 Fall 2021: Cryptographer - Grapher
-
+"""
 Module Description
 ==================
 This module contains functions that handle the drawing and graphing of the two datasets.
 
 Copyright and Usage Information
 ===============================
-This file is intended exclusively for academic use for the University of Toronto St. George Campus
-in the CSC110 class of Fall 2021. Any distribution of this code, with or without changes,
-are expressly prohibited.
+Any distribution of this code, with or without changes, are expressly prohibited.
 
 This file is Copyright (c) 2021 Madeline Ahn, and Samuel Weiss.
 """
@@ -128,8 +125,7 @@ class Grapher:
         circle2 = pygame.draw.circle(self.screen, self.dataset2.color,
                                      [legend.left + radius, legend.bottom - radius], radius)
 
-
-        # draw/scale text for legend and draw circle
+        #  draw/scale text for legend and draw circle
         text1 = self.normal_font.render(self.dataset1.name, True, self.line_color)
         if text1.get_rect(midleft=circle1.midright).right > 800:
             text1 = pygame.transform.scale(text1, (int(dimensions - radius * 2), 20))
@@ -203,7 +199,7 @@ class Grapher:
         text_1 = self.normal_font.render(str(date), True, self.line_color)
         text_rect_1 = text_1.get_rect(bottomleft=point_location.midtop)
         if text_rect_1.right > 800:
-            text_rect_1.midbottom = point_location.midtop
+            text_rect_1.bottomright = point_location.topleft
         self.screen.blit(text_1, text_rect_1)
 
         text_2 = self.normal_font.render('$' + str(value), True, self.line_color)
@@ -246,23 +242,23 @@ class Grapher:
         for dataset in datasets:
             self.make_info_box('Avg $ change per day: '
                                + str(calc_avg_before(dataset, self.comparison)),
-                               (30 + counter * 250, 100),
+                               (30 + counter * 300, 100),
                                dataset.color)
             self.make_info_box('Avg % change per day: '
                                + str(calc_per_before(dataset, self.comparison)),
-                               (30 + counter * 250, 125),
+                               (30 + counter * 300, 125),
                                dataset.color)
 
-            pygame.draw.line(self.screen, (255, 0, 0), (30 + counter * 200, 149),
-                             (250 + counter * 250, 149), 4)
+            pygame.draw.line(self.screen, (255, 0, 0), (30 + counter * 300, 149),
+                             (250 + counter * 300, 149), 4)
 
             self.make_info_box('Avg $ change per day: '
                                + str(calc_avg_after(dataset, self.comparison)),
-                               (30 + counter * 250, 152),
+                               (30 + counter * 300, 152),
                                dataset.color)
             self.make_info_box('Avg % change per day: '
                                + str(calc_per_after(dataset, self.comparison)),
-                               (30 + counter * 250, 177),
+                               (30 + counter * 300, 177),
                                dataset.color)
 
             counter += 1
