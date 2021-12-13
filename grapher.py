@@ -1,4 +1,17 @@
-"""TODO: ADD DOCSTRING"""
+"""CSC110 Fall 2021: Cryptographer - Grapher
+
+Module Description
+==================
+This module contains functions that handle the drawing and graphing of the two datasets.
+
+Copyright and Usage Information
+===============================
+This file is intended exclusively for academic use for the University of Toronto St. George Campus
+in the CSC110 class of Fall 2021. Any distribution of this code, with or without changes,
+are expressly prohibited.
+
+This file is Copyright (c) 2021 Madeline Ahn, and Samuel Weiss.
+"""
 import pygame
 from datetime import datetime
 from button import Button
@@ -30,7 +43,6 @@ class Grapher:
     >>> screen = pygame.display.set_mode((800, 800))
     >>> graph = Grapher(d1, d2, screen)
     """
-
     dataset1: Dataset
     dataset2: Dataset
     screen: pygame.display
@@ -41,7 +53,8 @@ class Grapher:
 
     def __init__(self, dataset1: Dataset, dataset2: Dataset, screen: pygame.display,
                  comparison: str) -> None:
-        """Initialize a new Grapher object"""
+        """Initialize a new Grapher object.
+        """
         self.dataset1 = dataset1
         self.dataset2 = dataset2
         self.comparison = comparison
@@ -51,7 +64,8 @@ class Grapher:
         self.screen = screen
 
     def make_graph(self) -> str:
-        """Handles the making of the final graph"""
+        """Handles the making of the final graph.
+        """
         running = 'graph'
         while running == 'graph':
             self.screen.fill(self.bg_color)
@@ -67,21 +81,21 @@ class Grapher:
 
             pygame.display.update()
 
-            # exit condition:
+            # Exit condition:
             running = check_events(pygame.event.get(), continue_button)
-
         return running
 
     def create_axis(self) -> None:
-        """Creates the axis of the graph"""
+        """Creates the axis of the graph.
+        """
         line_width = 3
         y_axis = pygame.draw.line(self.screen, self.line_color, (30, 100), (30, 750), line_width)
         x_axis = pygame.draw.line(self.screen, self.line_color, (30, 750), (750, 750), line_width)
         self.label_axis(x_axis, y_axis)
 
     def label_axis(self, x: pygame.rect.Rect, y: pygame.rect.Rect) -> None:
-        """Label the axis"""
-
+        """Labels the axis.
+        """
         x_label = self.normal_font.render('DAYS', True, self.line_color)
         x_rect = x_label.get_rect(midtop=x.midbottom)
 
@@ -100,18 +114,20 @@ class Grapher:
         self.screen.blit(title, title_rect)
 
     def create_legend(self) -> None:
-        """Create a legend which labels the two datasets"""
+        """Creates a legend which labels the two datasets.
+        """
         # Decide the dimensions/create empty box
         dimensions = 140
         legend = pygame.draw.rect(self.screen, self.line_color,
                                   [650, 10, dimensions, dimensions / 1.5], True)
         radius = dimensions / 6
 
-        # create circles
+        # Create circles
         circle1 = pygame.draw.circle(self.screen, self.dataset1.color,
                                      [legend.left + radius, legend.top + radius], radius)
         circle2 = pygame.draw.circle(self.screen, self.dataset2.color,
                                      [legend.left + radius, legend.bottom - radius], radius)
+
 
         # draw/scale text for legend and draw circle
         text1 = self.normal_font.render(self.dataset1.name, True, self.line_color)
@@ -130,7 +146,7 @@ class Grapher:
     def graph_points(self) -> None:
         """Graph all the points in dataset1, dataset2
 
-        Note that the area we can draw on is 720 x 650 pixels
+        Note that the area we can draw on is 720 x 650 pixels.
         """
         # Make sure we are working with the larger dataset first
         if self.dataset1 != self.dataset2:
@@ -154,7 +170,7 @@ class Grapher:
             # Set up a measurement so that each point has at least a 10 pixel gap between the center
             num_points = len(points)
             days_per_10_pixels = max(int(num_points / 72 + 0.5), 1)
-            # the graph has 720 pixels on the x axis and the + 0.5 rounds it up
+            # The graph has 720 pixels on the x axis and the + 0.5 rounds it up
             for i in range(0, len(points), days_per_10_pixels):
                 # Set Y and radius relative to the maximum value on the graph
                 centery = 750 - points[i].__getattribute__(self.comparison) / max_value * 600
@@ -179,7 +195,8 @@ class Grapher:
                     self.label_point(point_rect, points[i])
 
     def label_point(self, point_location: pygame.rect, point: Point) -> None:
-        """Helper function for graph_points to help label point."""
+        """Helper function for graph_points to help label point.
+        """
         value = str(point.__getattribute__(self.comparison))
         date = str(point.date)
 
@@ -195,9 +212,10 @@ class Grapher:
 
     def draw_line(self, dataset: Dataset, point1: tuple[int, int], point2: tuple[int, int],
                   date: datetime.date) -> None:
-        """Draw a line between 2 points. Line is red if date is during March 2020"""
+        """Draw a line between 2 points. Line is red if date is during March 2020.
+        """
         color = dataset.color
-        # just in case a point in March is not caught, we measure the first half of april
+        # In case a point in March is not caught, we measure the first half of April
         if datetime(2020, 2, 28).date() < date < datetime(2020, 4, 15).date():
             color = (255, 0, 0)
         pygame.draw.line(self.screen, color, point1, point2, 3)
@@ -219,7 +237,8 @@ class Grapher:
         self.screen.blit(rect, (point1[0], 75))
 
     def show_increase_data(self) -> None:
-        """Show the monetary and percent increase of both datasets."""
+        """Show the monetary and percent increase of both datasets.
+        """
         counter = 0
         datasets = [self.dataset1, self.dataset2]
         if self.dataset1 == self.dataset2:
@@ -249,7 +268,8 @@ class Grapher:
             counter += 1
 
     def make_info_box(self, info: str, pos: tuple[int, int], color: tuple[int, int, int]) -> None:
-        """Create a coloured box containing info at the given rect."""
+        """Creates a coloured box containing info at the given rectangle.
+        """
         text_display = self.normal_font.render(info, True, self.line_color)
         text_rect = text_display.get_rect(topleft=pos)
         pygame.draw.rect(self.screen, color, text_rect, False)
@@ -258,7 +278,8 @@ class Grapher:
 
 
 def check_events(events: list[pygame.event.Event], continue_button: Button) -> str:
-    """Return whether the user wants to quit or other events have been activated"""
+    """Returns whether the user wants to quit or other events have been activated.
+    """
     for event in events:
         if event.type == pygame.QUIT:
             return 'quit'
@@ -269,7 +290,7 @@ def check_events(events: list[pygame.event.Event], continue_button: Button) -> s
 
 
 def even_out_datasets(datasets: list[Dataset]) -> list[Dataset, Dataset]:
-    """return the shorter dataset with the same number of points as the larger one.
+    """Returns the shorter dataset with the same number of points as the larger one.
 
     All points added will have value of 0 and a location such that the datetime matches the larger
     dataset.

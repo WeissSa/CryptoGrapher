@@ -1,4 +1,17 @@
-"""TODO: Add docstring"""
+"""CSC110 Fall 2021: Cryptographer - Grapher
+
+Module Description
+==================
+This module contains functions that
+
+Copyright and Usage Information
+===============================
+This file is intended exclusively for academic use for the University of Toronto St. George Campus
+in the CSC110 class of Fall 2021. Any distribution of this code, with or without changes,
+are expressly prohibited.
+
+This file is Copyright (c) 2021 Madeline Ahn, and Samuel Weiss.
+"""
 import pygame
 
 
@@ -21,9 +34,7 @@ class Button:
 
     Example Usage:
     >>> button1 = Button((0, 0), (50, 50), (0,0,0))
-
     """
-
     position: tuple[int, int]
     dimensions: tuple[float, float]
     color: tuple[int, int, int]
@@ -32,15 +43,18 @@ class Button:
 
     def __init__(self, position: tuple[int, int], dimensions: tuple[float, float],
                  color: tuple[int, int, int]) -> None:
+        """Initializes a new instance of a button.
+        """
         self.position = position
         self.color = color
         self.dimensions = dimensions
-        self.is_hovered = False  # assume it is not hovered by default
+        self.is_hovered = False  # Assume it is not hovered by default
         # The hover color is a lighter version of the original color
         self.hover_color = tuple((min(x + 20, 255) for x in color))
 
     def display(self, screen: pygame.display, font: pygame.font, text: str) -> None:
-        """Draws the button on screen"""
+        """Draws the button on screen.
+        """
         self.check_hovered(pygame.mouse.get_pos())
         x, y = self.position
         w, length = self.dimensions
@@ -54,7 +68,8 @@ class Button:
         screen.blit(text_display, text_rect)
 
     def is_clicked(self, mouse: tuple[float, float]) -> bool:
-        """Return if mouse is colliding with self."""
+        """Return if mouse is colliding with self.
+        """
         x, y = self.position
         w, length = self.dimensions
         temp_rect = pygame.rect.Rect(x, y, w, length)
@@ -63,7 +78,8 @@ class Button:
         return False
 
     def check_hovered(self, mouse: tuple[float, float]) -> None:
-        """Check to see if the button is being hovered over."""
+        """Check to see if the button is being hovered over.
+        """
         x, y = self.position
         w, length = self.dimensions
         temp_rect = pygame.rect.Rect(x, y, w, length)
@@ -81,4 +97,5 @@ if __name__ == '__main__':
         'extra-imports': ['pygame'],
         'disable': ['R1705', 'C0200']
     })
+
     # No doctests present

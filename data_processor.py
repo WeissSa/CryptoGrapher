@@ -1,5 +1,17 @@
-"""TODO: ADD DOCSTRING
+"""CSC110 Fall 2021: Cryptographer - Data Processor
 
+Module Description
+==================
+This module contains functions that processes the data and does calculations on the average
+increases for the datasets.
+
+Copyright and Usage Information
+===============================
+This file is intended exclusively for academic use for the University of Toronto St. George Campus
+in the CSC110 class of Fall 2021. Any distribution of this code, with or without changes,
+are expressly prohibited.
+
+This file is Copyright (c) 2021 Madeline Ahn, and Samuel Weiss.
 """
 import datetime
 from data_handler import Dataset
