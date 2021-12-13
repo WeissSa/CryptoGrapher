@@ -113,7 +113,7 @@ class Grapher:
         circle2 = pygame.draw.circle(self.screen, self.dataset2.color,
                                      [legend.left + radius, legend.bottom - radius], radius)
 
-        # draw/scale text
+        # draw/scale text for legend and draw circle
         text1 = self.normal_font.render(self.dataset1.name, True, self.line_color)
         if text1.get_rect(midleft=circle1.midright).right > 800:
             text1 = pygame.transform.scale(text1, (int(dimensions - radius * 2), 20))
@@ -139,7 +139,7 @@ class Grapher:
                 datasets.reverse()
 
             datasets = even_out_datasets(datasets)
-
+            # set the max value for the given graph which all other points are compared to
             max_value = max([x.__getattribute__(self.comparison)
                              for x in datasets[0].points] + [x.__getattribute__(self.comparison)
                                                              for x in datasets[1].points])
@@ -184,7 +184,7 @@ class Grapher:
         date = str(point.date)
 
         text_1 = self.normal_font.render(str(date), True, self.line_color)
-        text_rect_1 = text_1.get_rect(midbottom=point_location.midtop)
+        text_rect_1 = text_1.get_rect(bottomleft=point_location.midtop)
         self.screen.blit(text_1, text_rect_1)
 
         text_2 = self.normal_font.render('$' + str(value), True, self.line_color)
@@ -275,6 +275,7 @@ def even_out_datasets(datasets: list[Dataset]) -> list[Dataset, Dataset]:
     temp_dataset_1 = Dataset(datasets[0].points.copy(), datasets[0].color, datasets[0].name)
     temp_dataset_2 = Dataset(datasets[1].points.copy(), datasets[1].color, datasets[1].name)
     i = 0
+    # Add blank points until there are an even number of points
     while len(temp_dataset_1.points) > len(temp_dataset_2.points):
         equivalent_point = temp_dataset_1.points[i]
         temp_dataset_2.points.insert(i, Point(temp_dataset_2.name, equivalent_point.date, 0, 0, 0))

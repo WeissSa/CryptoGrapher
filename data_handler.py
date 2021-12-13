@@ -70,10 +70,13 @@ def create_datasets(path: str) -> dict[str, Dataset]:
                 reader = csv.reader(file)
                 next(reader)  # can gain headers from this line if used in assignment
                 points = [process_row(row) for row in reader]
+
+                # Randomize color if color not present in color_assignments
                 if points[0].name in color_assignments:
                     color = color_assignments[points[0].name]
                 else:
                     color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
                 new_dataset = Dataset(points=points,
                                       color=color,
                                       name=points[0].name)
