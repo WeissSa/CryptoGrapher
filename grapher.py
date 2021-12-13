@@ -128,7 +128,8 @@ class Grapher:
         circle2 = pygame.draw.circle(self.screen, self.dataset2.color,
                                      [legend.left + radius, legend.bottom - radius], radius)
 
-        # Draw/scale text
+
+        # draw/scale text for legend and draw circle
         text1 = self.normal_font.render(self.dataset1.name, True, self.line_color)
         if text1.get_rect(midleft=circle1.midright).right > 800:
             text1 = pygame.transform.scale(text1, (int(dimensions - radius * 2), 20))
@@ -154,7 +155,7 @@ class Grapher:
                 datasets.reverse()
 
             datasets = even_out_datasets(datasets)
-
+            # set the max value for the given graph which all other points are compared to
             max_value = max([x.__getattribute__(self.comparison)
                              for x in datasets[0].points] + [x.__getattribute__(self.comparison)
                                                              for x in datasets[1].points])
@@ -172,7 +173,7 @@ class Grapher:
             # The graph has 720 pixels on the x axis and the + 0.5 rounds it up
             for i in range(0, len(points), days_per_10_pixels):
                 # Set Y and radius relative to the maximum value on the graph
-                centery = 750 - points[i].__getattribute__(self.comparison) / max_value * 650
+                centery = 750 - points[i].__getattribute__(self.comparison) / max_value * 600
 
                 # 1 minimum radius so you can hover over any point (it can get a bit precise still)
                 radius = max(points[i].__getattribute__(self.comparison) / max_value * 10, 3)
@@ -184,7 +185,7 @@ class Grapher:
                 # Draw a line to the next point
                 if i < len(points) - days_per_10_pixels:
                     center_y2 = points[i + days_per_10_pixels].__getattribute__(self.comparison)
-                    center_y2 = 750 - center_y2 / max_value * 650
+                    center_y2 = 750 - center_y2 / max_value * 600
                     x_1 = 30 + i // days_per_10_pixels * 10
                     x_2 = 30 + (i // days_per_10_pixels + 1) * 10
                     self.draw_line(dataset, (x_1, centery), (x_2, center_y2), points[i].date)
@@ -200,7 +201,9 @@ class Grapher:
         date = str(point.date)
 
         text_1 = self.normal_font.render(str(date), True, self.line_color)
-        text_rect_1 = text_1.get_rect(midbottom=point_location.midtop)
+        text_rect_1 = text_1.get_rect(bottomleft=point_location.midtop)
+        if text_rect_1.right > 800:
+            text_rect_1.midbottom = point_location.midtop
         self.screen.blit(text_1, text_rect_1)
 
         text_2 = self.normal_font.render('$' + str(value), True, self.line_color)
@@ -243,23 +246,23 @@ class Grapher:
         for dataset in datasets:
             self.make_info_box('Avg $ change per day: '
                                + str(calc_avg_before(dataset, self.comparison)),
-                               (30, 100 + 4 * counter * 25),
+                               (30 + counter * 250, 100),
                                dataset.color)
             self.make_info_box('Avg % change per day: '
                                + str(calc_per_before(dataset, self.comparison)),
-                               (30, 125 + 4 * counter * 25),
+                               (30 + counter * 250, 125),
                                dataset.color)
 
-            pygame.draw.line(self.screen, (255, 0, 0), (30, 149 + 50 * counter * 2),
-                             (250, 149 + 50 * counter * 2), 4)
+            pygame.draw.line(self.screen, (255, 0, 0), (30 + counter * 200, 149),
+                             (250 + counter * 250, 149), 4)
 
             self.make_info_box('Avg $ change per day: '
                                + str(calc_avg_after(dataset, self.comparison)),
-                               (30, 152 + 4 * counter * 25),
+                               (30 + counter * 250, 152),
                                dataset.color)
             self.make_info_box('Avg % change per day: '
                                + str(calc_per_after(dataset, self.comparison)),
-                               (30, 177 + 4 * counter * 25),
+                               (30 + counter * 250, 177),
                                dataset.color)
 
             counter += 1
@@ -292,9 +295,10 @@ def even_out_datasets(datasets: list[Dataset]) -> list[Dataset, Dataset]:
     All points added will have value of 0 and a location such that the datetime matches the larger
     dataset.
     """
-    temp_dataset_1 = Dataset(datasets[0].points, datasets[0].color, datasets[0].name)
-    temp_dataset_2 = Dataset(datasets[1].points, datasets[1].color, datasets[1].name)
+    temp_dataset_1 = Dataset(datasets[0].points.copy(), datasets[0].color, datasets[0].name)
+    temp_dataset_2 = Dataset(datasets[1].points.copy(), datasets[1].color, datasets[1].name)
     i = 0
+    # Add blank points until there are an even number of points
     while len(temp_dataset_1.points) > len(temp_dataset_2.points):
         equivalent_point = temp_dataset_1.points[i]
         temp_dataset_2.points.insert(i, Point(temp_dataset_2.name, equivalent_point.date, 0, 0, 0))
