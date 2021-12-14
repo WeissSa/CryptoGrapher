@@ -3,5 +3,5 @@ pytest
 python-ta
 
 # Graphics and data visualization
-pygame
+pygame==2.1.0
 
