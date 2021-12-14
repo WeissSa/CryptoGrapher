@@ -16,11 +16,4 @@ from menu import run_menu
 from data_handler import create_datasets
 
 if __name__ == '__main__':
-    import python_ta
-
-    python_ta.check_all(config={
-        'max-line-length': 100,
-        'extra-imports': ['data_handler', 'menu'],
-        'disable': ['R1705', 'C0200']
-    })
     run_menu(create_datasets('data'))
